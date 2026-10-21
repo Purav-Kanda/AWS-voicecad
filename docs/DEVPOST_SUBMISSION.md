@@ -25,7 +25,7 @@ Reminder from the rules: one project can win one track prize and one mini challe
 
 ### Inspiration
 
-[you confirm: one or two true sentences about why you wanted this. For example, a part you needed and could not find, or how long CAD took you.]
+I bought my first 3D printer with my first co-op paycheques, and then hit a wall: the printer was the easy part. Learning CAD software, finding my way around a 3D workspace, and getting the dimensions right took far longer than the prints themselves. Most hobbyists do not want a second hobby in learning software. They just want a phone stand, a bracket or a hook that fits. So I built voicecad: tell your assistant what you want, answer a few simple questions, and get a file that is ready to print.
 
 ### What it does
 
