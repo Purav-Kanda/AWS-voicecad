@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "voicecad"
+version = "0.1.0"
+description = "Voice-guided 3D part maker: an MCP server that asks for missing dimensions, checks printability, and returns STL files."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=2.0,<2.2",
+    "numpy",
+    "trimesh",
+    "manifold3d",
+    "networkx",   # trimesh needs it to patch holes in uploaded models
+    "pillow",
+    "strands-agents>=1.61",
+    "boto3",
+    "uvicorn",
+    "httpx",
+    "guided-intake",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "rtree"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+voicecad = ["static/*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "../guided-intake/src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 130
+target-version = "py313"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+ignore = ["UP040"]   # TypeAlias is kept so the alias reads the same on every tool
+
+[tool.mypy]
+python_version = "3.13"
+mypy_path = "src:../guided-intake/src"
+ignore_missing_imports = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+files = ["src/voicecad"]

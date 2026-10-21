@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>voicecad</title>
+<style>
+  :root { --bg:#0e1116; --panel:#171b22; --line:#262c36; --ink:#e8ecf2; --dim:#8b95a5; --accent:#3aa0ff; --warn:#ff7a59; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.45 system-ui, sans-serif; min-height:100vh; display:flex; justify-content:center; }
+  main { width:100%; max-width:640px; padding:20px 16px 28px; display:flex; flex-direction:column; gap:14px; }
+  header { text-align:center; }
+  h1 { margin:0; font-size:20px; letter-spacing:.04em; }
+  header p { margin:2px 0 0; color:var(--dim); font-size:13px; }
+  .orb { width:92px; height:92px; margin:6px auto; border-radius:50%; background:radial-gradient(circle at 35% 30%, #7cc4ff, var(--accent) 55%, #12406e);
+         box-shadow:0 0 0 0 rgba(58,160,255,.5); transition:filter .3s; }
+  .orb.idle { filter:saturate(.5) brightness(.8); }
+  .orb.listening { animation:pulse 1.2s infinite; }
+  .orb.thinking { animation:spin 1.4s linear infinite; background:conic-gradient(from 0deg, #12406e, var(--accent), #7cc4ff, #12406e); }
+  .orb.speaking { animation:pulse .7s infinite; }
+  @keyframes pulse { 70% { box-shadow:0 0 0 24px rgba(58,160,255,0); } 100% { box-shadow:0 0 0 0 rgba(58,160,255,0); } }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  #log { flex:1; min-height:260px; max-height:56vh; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding:4px; }
+  .msg { max-width:86%; padding:10px 13px; border-radius:14px; background:var(--panel); border:1px solid var(--line); }
+  .msg.user { align-self:flex-end; background:#16365a; border-color:#1f4c7e; }
+  .msg.error { border-color:var(--warn); color:var(--warn); }
+  .card { align-self:stretch; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:12px; display:flex; gap:12px; align-items:center; }
+  .card img { width:132px; height:132px; border-radius:10px; object-fit:cover; background:#f4f6fa; }
+  .card h3 { margin:0 0 4px; font-size:15px; text-transform:capitalize; }
+  .card p { margin:0 0 8px; color:var(--dim); font-size:13px; }
+  .card a { display:inline-block; padding:7px 12px; border-radius:9px; background:var(--accent); color:#04121f; font-weight:600; text-decoration:none; font-size:14px; }
+  form { display:flex; gap:8px; }
+  input[type=text] { flex:1; padding:12px 14px; border-radius:12px; border:1px solid var(--line); background:var(--panel); color:var(--ink); font-size:16px; }
+  button { padding:0 14px; border-radius:12px; border:1px solid var(--line); background:var(--panel); color:var(--ink); font-size:15px; cursor:pointer; }
+  button.primary { background:var(--accent); color:#04121f; border-color:var(--accent); font-weight:600; }
+  button[aria-pressed=true] { border-color:var(--accent); color:var(--accent); }
+  .row { display:flex; justify-content:space-between; color:var(--dim); font-size:13px; }
+  .row label { display:flex; gap:6px; align-items:center; cursor:pointer; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>voicecad</h1>
+    <p>Describe a part. Answer a few questions. Get a printable file.</p>
+  </header>
+  <div id="orb" class="orb idle" aria-hidden="true"></div>
+  <div id="log" aria-live="polite"></div>
+  <form id="form">
+    <button type="button" id="mic" aria-pressed="false" title="Speak">Mic</button>
+    <button type="button" id="upload" title="Upload your own .stl model to resize">Upload</button>
+    <input type="file" id="file" accept=".stl" hidden>
+    <input type="text" id="text" placeholder="Try: I need a phone stand" autocomplete="off">
+    <button class="primary" type="submit">Send</button>
+  </form>
+  <div class="row">
+    <label><input type="checkbox" id="speak" checked> Speak replies</label>
+    <span id="hint">Voice input needs Chrome or Edge.</span>
+  </div>
+</main>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const log = $('log'), orb = $('orb'), field = $('text');
+  const session = (crypto.randomUUID && crypto.randomUUID()) || String(Date.now());
+  const setState = s => { orb.className = 'orb ' + s; };
+
+  function bubble(kind, text) {
+    const el = document.createElement('div');
+    el.className = 'msg ' + kind;
+    el.textContent = text;
+    log.appendChild(el);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function card(file) {
+    const el = document.createElement('div');
+    el.className = 'card';
+    const img = document.createElement('img');
+    img.src = file.png; img.alt = 'Preview of the ' + file.part;
+    const box = document.createElement('div');
+    const title = document.createElement('h3'); title.textContent = file.part;
+    const dims = document.createElement('p');
+    dims.textContent = (file.size_mm || []).join(' x ') + ' mm';
+    const link = document.createElement('a');
+    link.href = file.stl; link.textContent = 'Download STL'; link.setAttribute('download', '');
+    box.append(title, dims, link);
+    el.append(img, box);
+    log.appendChild(el);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function say(text) {
+    if (!$('speak').checked || !('speechSynthesis' in window)) { setState('idle'); return; }
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.onstart = () => setState('speaking');
+    u.onend = u.onerror = () => setState('idle');
+    speechSynthesis.speak(u);
+  }
+
+  async function send(message, shown) {
+    bubble('user', shown || message);
+    setState('thinking');
+    try {
+      const resp = await fetch('/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({ session, message }) });
+      const data = await resp.json();
+      if (!resp.ok) { bubble('error', data.error || 'Something went wrong.'); setState('idle'); return; }
+      bubble('bot', data.reply);
+      (data.files || []).forEach(card);
+      say(data.reply);
+    } catch (e) {
+      bubble('error', 'Could not reach the server.');
+      setState('idle');
+    }
+  }
+
+  $('form').addEventListener('submit', e => {
+    e.preventDefault();
+    const t = field.value.trim();
+    if (!t) return;
+    field.value = '';
+    send(t);
+  });
+
+  $('upload').addEventListener('click', () => $('file').click());
+  $('file').addEventListener('change', async () => {
+    const file = $('file').files[0];
+    $('file').value = '';
+    if (!file) return;
+    setState('thinking');
+    try {
+      const resp = await fetch('/upload?name=' + encodeURIComponent(file.name), { method: 'POST', body: file });
+      const data = await resp.json();
+      if (!resp.ok) { bubble('error', data.error || 'The upload failed.'); setState('idle'); return; }
+      const size = data.size_mm.join(' x ');
+      send('I uploaded a 3D model file called ' + data.name + '. Its id is ' + data.id + ' and it is ' + size +
+           ' millimeters. I want to resize it.', 'Uploaded ' + data.name + ' (' + size + ' mm)');
+    } catch (e) {
+      bubble('error', 'Could not upload the file.');
+      setState('idle');
+    }
+  });
+
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const mic = $('mic');
+  if (!Recognition) { mic.disabled = true; mic.title = 'Voice input is not supported in this browser'; }
+  else {
+    const rec = new Recognition();
+    rec.lang = 'en-US'; rec.interimResults = false;
+    rec.onstart = () => { mic.setAttribute('aria-pressed', 'true'); setState('listening'); };
+    rec.onend = () => { mic.setAttribute('aria-pressed', 'false'); if (orb.className.includes('listening')) setState('idle'); };
+    rec.onresult = e => send(e.results[0][0].transcript);
+    rec.onerror = () => setState('idle');
+    mic.addEventListener('click', () => { speechSynthesis.cancel(); try { rec.start(); } catch (e) {} });
+  }
+
+  bubble('bot', 'Hi. I can make a storage box, an L bracket, a phone stand, a laptop riser or an electronics case. Or press Upload to resize your own STL file. What do you need?');
+})();
+</script>
+</body>
+</html>
