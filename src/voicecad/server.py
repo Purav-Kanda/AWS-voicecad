@@ -39,7 +39,7 @@ def create_server(settings: Settings | None = None, catalog: Catalog | None = No
         path = safe_output_path(out_dir, file, ".stl")
         png = path.with_suffix(".png")
         if not png.exists():
-            render_png(trimesh.load(path, force="mesh"), png)
+            render_png(trimesh.load_mesh(path), png)
         return Image(data=png.read_bytes(), format="png")
 
     return server

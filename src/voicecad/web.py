@@ -67,7 +67,7 @@ def create_demo_app(settings: Settings | None = None, mcp_url: str | None = None
         stl = target / Path(part["file"]).name   # only ever look inside the output folder
         png = stl.with_suffix(".png")
         if stl.exists() and not png.exists():
-            render_png(trimesh.load(stl), png)
+            render_png(trimesh.load_mesh(stl), png)
         return {"part": part.get("part"), "size_mm": part.get("size_mm"),
                 "stl": f"/files/{stl.name}", "png": f"/files/{png.name}"}
 

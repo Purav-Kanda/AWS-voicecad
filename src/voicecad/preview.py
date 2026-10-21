@@ -63,7 +63,7 @@ def render_png(shape: trimesh.Trimesh, out_file: Path, size_px: int = 520,
 
     picture = Image.fromarray((canvas * 255).astype(np.uint8))
     if supersample > 1:
-        picture = picture.resize((size_px, size_px), Image.LANCZOS)
+        picture = picture.resize((size_px, size_px), Image.Resampling.LANCZOS)
     out_file.parent.mkdir(parents=True, exist_ok=True)
     picture.save(out_file)
     return out_file
