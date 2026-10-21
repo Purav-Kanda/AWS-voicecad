@@ -61,7 +61,7 @@ voicecad: a voice-guided 3D part maker for Alexa+.
 An MCP server (Streamable HTTP, protocol 2025-11-25) that asks for missing dimensions,
 checks printability, and returns STL files.
 
-Code: https://github.com/Purav-Kanda/voicecad
+Code: https://github.com/Purav-Kanda/AWS-voicecad
 Open source library: https://github.com/Purav-Kanda/guided-intake
 
 Built with: MCP Python SDK, Strands Agents SDK, Amazon Bedrock, trimesh, manifold3d.

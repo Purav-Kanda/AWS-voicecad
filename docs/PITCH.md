@@ -39,7 +39,7 @@ Getting booleans right. My first gusset was inside out because of triangle windi
 No authentication on the endpoint, sessions held in memory, and one server process. All three are documented in the README.
 
 **How does it use AWS?**
-The demo assistant is a Strands Agents SDK agent calling Amazon Bedrock, and it reaches the tools through MCP. **[you confirm: model ID, region, and what the setup was like]**
+The demo assistant is a Strands Agents SDK agent calling Amazon Bedrock, and it reaches the tools through MCP. I used Claude Haiku 4.5 through a global cross-region inference profile in us-east-2. Setup took longer than the code, because of account quotas and the key type. The details are in the product feedback.
 
 **Why open source the library separately?**
 Slot filling shows up in many assistants: booking, ordering, forms. The library has no 3D printing code. Anyone can use it with any MCP server.

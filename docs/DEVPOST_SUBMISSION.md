@@ -57,7 +57,7 @@ You can also bring your own model. Upload an STL file, say what it is, and choos
 
 ### What we learned
 
-[you confirm: one or two true lessons. Possible honest topics: keeping conversation state in code, MCP tool design, working with Bedrock.]
+Do not trust the model to finish a job. Mine sometimes said a part was ready without calling the tool that builds it, so the server now tells the model the next step after every answer, and the agent checks that the file really exists. I also learned to keep all the rules and conversation state in code and let the model only talk, and to test the first live run against a real cloud account early, because quotas and keys took longer than the code.
 
 ### What's next
 
@@ -75,15 +75,15 @@ Python, MCP Python SDK, Strands Agents SDK, Amazon Bedrock, trimesh, manifold3d,
 
 ## Try it out links
 
-- Code: https://github.com/Purav-Kanda/voicecad
+- Code: https://github.com/Purav-Kanda/AWS-voicecad
 - Demo video: YOUR-YOUTUBE-LINK
 
 ## Testing instructions (for judges)
 
 ```
 git clone https://github.com/Purav-Kanda/guided-intake
-git clone https://github.com/Purav-Kanda/voicecad
-cd voicecad
+git clone https://github.com/Purav-Kanda/AWS-voicecad
+cd AWS-voicecad
 python3.13 -m venv .venv && source .venv/bin/activate
 pip install -e ../guided-intake -e ".[dev]"
 pytest -q
@@ -104,9 +104,9 @@ To run the voice demo, AWS credentials with Bedrock model access are needed (see
 
 Which AWS tools or services did you use, and for what?
 
-"Amazon Bedrock, through the Strands Agents SDK `BedrockModel`, powers the assistant that talks to the user. The Strands agent connects to the voicecad MCP server and calls its tools. [you confirm: model ID and region you used.]"
+"Amazon Bedrock, through the Strands Agents SDK `BedrockModel`, powers the assistant that talks to the user. The Strands agent connects to the voicecad MCP server and calls its tools. I used Claude Haiku 4.5 through a global cross-region inference profile in us-east-2."
 
-Product feedback: copy from `PRODUCT_FEEDBACK.md` after you fill in the TODO lines from your own live run.
+Product feedback: copy from `PRODUCT_FEEDBACK.md`.
 
 ## Friction log (up to 10 percent bonus)
 
@@ -135,5 +135,5 @@ Description:
 - [ ] AWS Builder: Bedrock use described, product feedback filled in with your own experience.
 - [ ] Open Source: contribution URL, repository URL, GitHub username and description entered.
 - [ ] Friction log pasted.
-- [ ] All `YOUR-...` and `[you confirm ...]` and `TODO` text removed.
+- [ ] All `YOUR-...` and `[you confirm ...]` text removed.
 - [ ] Submitted before the deadline, Friday October 23, 2026 at 3:00 pm Eastern. Aim for at least a day earlier.
