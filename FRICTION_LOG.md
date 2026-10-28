@@ -62,6 +62,36 @@ Problems hit while building voicecad for the Alexa+ track and the AWS Builder mi
 - **Workaround:** Created the client with `base_url="http://127.0.0.1:8000"`, which the protection allows.
 - **Suggestion:** Return a readable error body for a rejected host, and mention the allowed hosts in the testing docs.
 
+## 7. A new Bedrock account had reduced quotas, and the error blamed daily token use
+
+- **Task:** Run the demo assistant on Amazon Bedrock for the first time.
+- **Steps:** Called Claude models through Strands `BedrockModel` in us-east-2, then tried several newer Claude models to see which one worked.
+- **Expected:** The models listed in the console work.
+- **Actual:** Anthropic models first needed a use case form. After that, only Claude Haiku 4.5 and Nova 2 Lite worked. The newer Claude models returned access or quota errors, and one message said "too many tokens per day", which made it look like I had used too much when the account just had reduced quotas.
+- **Severity:** High. It cost the most time of anything in this build.
+- **Workaround:** Wrote `scripts/check_bedrock.py`, which tries a list of model IDs and shows which ones work, then used Haiku 4.5 through a global cross-region inference profile.
+- **Suggestion:** Say in the error when the cause is a reduced account quota or a missing use case form, and link to where to fix it. Show on the model page which models a new account can call.
+
+## 8. Short-term and long-term Bedrock API keys give the same "Invalid API Key format" error
+
+- **Task:** Give a script credentials for Bedrock.
+- **Steps:** Set `AWS_BEARER_TOKEN_BEDROCK` to a short-term key, which had expired, then to a value that was not a key.
+- **Expected:** An error that says the key expired or is the wrong type.
+- **Actual:** "Invalid API Key format" for both cases. The long-term key that worked starts with `ABSK`. In a new PowerShell window the variable was not set at all, which gave "Unable to locate credentials".
+- **Severity:** Medium.
+- **Workaround:** Generated a long-term key with a one day expiry, checked its prefix without printing it, and set the variable in the same window that runs the app.
+- **Suggestion:** Say whether a key has expired or is the wrong kind, and show the key type in the console next to each key.
+
+## 9. A temporary Bedrock error that went away on retry
+
+- **Task:** Run the live assistant.
+- **Steps:** Sent a normal request once.
+- **Expected:** A response.
+- **Actual:** One `ServiceUnavailableException`, and the same request worked on the next try.
+- **Severity:** Low.
+- **Workaround:** The demo page shows AWS's own error text so the cause is visible, and a retry fixed it.
+- **Suggestion:** Say in the error whether a retry is expected to work.
+
 ## Feature requests
 
 - **A local test harness for Alexa+ MCP servers (Important).** There was no way to try the server against Alexa+ itself, so the demo uses a simulated assistant. A downloadable simulator that calls MCP tools the way Alexa+ does would let developers test before submitting.

@@ -27,7 +27,7 @@ Models forget fields, ask twice, or accept impossible values. Putting the state 
 It is built to the Alexa+ track requirements: an MCP server over Streamable HTTP, protocol 2025-11-25 or later. I verified the protocol handshake. I have not run it on an Alexa+ device, because there is no local simulator, so the demo uses a browser page that simulates the assistant. I listed this as a feature request in the friction log.
 
 **How do you know the parts will print?**
-The server checks that parts fit the printer's bed, that walls are thick enough, that holes have material around them, and that the final mesh is watertight. It exports the bracket on its side so it needs no supports. I printed **[you confirm: which part, which printer, result]**. I do not claim every output prints.
+The server checks that parts fit the printer's bed, that walls are thick enough, that holes have material around them, and that the final mesh is watertight. It exports the bracket on its side so it needs no supports. I printed the phone stand it made on my own 3D printer, and it came out clean. I do not claim every output prints.
 
 **What is original here?**
 The guided-intake library: conditional questions, rules that run only when their inputs exist, errors versus warnings, and hints for the assistant, all as plain code with no model dependency. voicecad is the first user of it.
@@ -48,7 +48,7 @@ Slot filling shows up in many assistants: booking, ordering, forms. The library 
 No. The default is Ender 3 size. Set `VOICECAD_PRINTER` to a preset or a size such as `250x210x220`.
 
 **Is the Raspberry Pi hole pattern right?**
-It uses the commonly published 85 by 56 mm board with holes 58 by 49 mm apart, 3.5 mm from the edge. The assistant tells the user to check it against their own board. **[you confirm against your board if you have one]**
+It uses the commonly published 85 by 56 mm board with holes 58 by 49 mm apart, 3.5 mm from the edge. The assistant tells the user to check it against their own board.
 
 ## What not to claim
 

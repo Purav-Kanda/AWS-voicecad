@@ -53,7 +53,7 @@ You can also bring your own model. Upload an STL file, say what it is, and choos
 
 - Over 120 automated tests in voicecad (plus 13 in guided-intake). They include a seeded random sweep (every design the rules accept must build into a watertight mesh), an in-process test that drives the server through the real MCP protocol from first question to STL file and preview image, and a headless-browser test of the demo page. A larger one-off sweep of 596 random designs had no build failures.
 - Lint and type checks pass in CI.
-- **[you confirm: printed part, which one, which printer, and whether it fit]**
+- I printed the phone stand it made on my own 3D printer, and it came out clean. I do not claim every output prints.
 
 ### What we learned
 
@@ -76,7 +76,7 @@ Python, MCP Python SDK, Strands Agents SDK, Amazon Bedrock, trimesh, manifold3d,
 ## Try it out links
 
 - Code: https://github.com/Purav-Kanda/AWS-voicecad
-- Demo video: YOUR-YOUTUBE-LINK
+- Demo video: https://youtu.be/-sxyCuDjAyM
 
 ## Testing instructions (for judges)
 
@@ -110,7 +110,7 @@ Product feedback: copy from `PRODUCT_FEEDBACK.md`.
 
 ## Friction log (up to 10 percent bonus)
 
-Copy from `FRICTION_LOG.md`. Six entries and two feature requests, all from this build.
+Copy from `FRICTION_LOG.md`. Nine entries and two feature requests, all from this build.
 
 ## Open Source mini challenge
 
